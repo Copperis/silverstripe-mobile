@@ -3,7 +3,7 @@
  * @package mobile
  */
 class MobileSiteTreeExtension extends DataExtension {
-	function MetaTags(&$tags) {
+	public function MetaTags(&$tags) {
 		$config = SiteConfig::current_site_config();
 
 		// Ensure a canonical link is placed, for semantic correctness and SEO
