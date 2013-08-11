@@ -6,11 +6,10 @@
  * @package mobile
  */
 class MobileSiteConfigExtension extends DataExtension {
-
 	/**
 	 * The path the default mobile theme should be copied
 	 * to when {@link SiteConfig} is first created in the database.
-	 * 
+	 *
 	 * @see MobileSiteConfigExtension::requireDefaultRecords()
 	 * @var string
 	 */
@@ -21,7 +20,7 @@ class MobileSiteConfigExtension extends DataExtension {
 	}
 
 	public static function get_theme_copy_path() {
-		if(!self::$theme_copy_path) {
+		if (!self::$theme_copy_path) {
                         $firstDefaultTheme = SiteConfig::config()->m_default_themes[0];
 			return '../' . THEMES_DIR . '/' . $firstDefaultTheme;
 		} else {
@@ -40,7 +39,6 @@ class MobileSiteConfigExtension extends DataExtension {
 		'MobileTheme' => 'Varchar(255)',
 		'MobileSiteType' => 'Enum("Disabled,RedirectToDomain,MobileThemeOnly","Disabled")'
 	);
-
 	private static $defaults = array(
 		'MobileSiteType' => 'Disabled'
 	);
@@ -52,7 +50,6 @@ class MobileSiteConfigExtension extends DataExtension {
 		$this->owner->MobileDomain = 'm.' . $_SERVER['HTTP_HOST'];
 		$this->owner->FullSiteDomain = $_SERVER['HTTP_HOST'];
 	}
-
 	/**
 	 * @return String The first available domain, with the current protocol prefixed,
 	 * suitable for redirections etc.
@@ -60,8 +57,8 @@ class MobileSiteConfigExtension extends DataExtension {
 	public function getMobileDomainNormalized() {
 		$domains = explode(',', $this->owner->MobileDomain);
 		$domain = array_shift($domains);
-		if(!$domain) return false;
-		if(!parse_url($domain, PHP_URL_SCHEME)) $domain = Director::protocol() . $domain;
+		if (!$domain) return false;
+		if (!parse_url($domain, PHP_URL_SCHEME)) $domain = Director::protocol() . $domain;
 		return $domain;
 	}
 
@@ -72,8 +69,8 @@ class MobileSiteConfigExtension extends DataExtension {
 	public function getFullSiteDomainNormalized() {
 		$domains = explode(',', $this->owner->FullSiteDomain);
 		$domain = array_shift($domains);
-		if(!$domain) return false;
-		if(!parse_url($domain, PHP_URL_SCHEME)) $domain = Director::protocol() . $domain;
+		if (!$domain) return false;
+		if (!parse_url($domain, PHP_URL_SCHEME)) $domain = Director::protocol() . $domain;
 		return $domain;
 	}
 
@@ -84,7 +81,7 @@ class MobileSiteConfigExtension extends DataExtension {
 	public function getMobileSiteType() {
 		$defaults = $this->owner->stat('defaults');
 		$value = $this->owner->getField('MobileSiteType');
-		if(!$value) $value = $defaults['MobileSiteType'];
+		if (!$value) $value = $defaults['MobileSiteType'];
 		return $value;
 	}
 
@@ -121,15 +118,15 @@ class MobileSiteConfigExtension extends DataExtension {
 	public static function copyDefaultTheme($theme = null) {
 		if(!$theme) $theme = SiteConfig::config()->m_default_themes[0];
 		$src = BASE_PATH . '/' . SiteConfig::config()->m_mobile_dir . '/themes/' . $theme;
-		if(!file_exists($src)) {
+		if (!file_exists($src)) {
 			throw new InvalidArgumentException(sprintf('Theme "%s" not found in path %s', $theme, $src));
 		}
 
 		$dst = self::get_theme_copy_path();
 
-		if(!file_exists($dst)) {
+		if (!file_exists($dst)) {
 			@mkdir($dst);
-			if(is_writable($dst)) {
+			if (is_writable($dst)) {
 				rcopy($src, $dst);
 				DB::alteration_message(
 					sprintf('Default mobile theme "%s" has been copied into the themes directory', $theme),
@@ -164,25 +161,24 @@ class MobileSiteConfigExtension extends DataExtension {
 			)
 		);
 	}
-
 }
 
 /**
  * Copies a directory from source to destination
  * completely by recursively copying each
  * individual file.
- * 
+ *
  * Note: This will ignore ".svn" directories.
- * 
+ *
  * @param string $src Source path
  * @param string $dst Destination path
  */
 function rcopy($src, $dst) {
 	$dir = opendir($src);
 	@mkdir($dst);
-	while(false !== ($file = readdir($dir))) {
-		if(($file != '.') && ($file != '..') && ($file != '.svn')) {
-			if(is_dir($src . '/' . $file)) {
+	while (false !== ($file = readdir($dir))) {
+		if (($file != '.') && ($file != '..') && ($file != '.svn')) {
+			if (is_dir($src . '/' . $file)) {
 				rcopy($src . '/' . $file, $dst . '/' . $file);
 			} else {
 				copy($src . '/' . $file, $dst . '/' . $file);
