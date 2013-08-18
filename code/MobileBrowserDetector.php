@@ -23,6 +23,10 @@ class MobileBrowserDetector {
 		return static::$detector_backend;
 	}
 
+	public static function is_mobile() {
+		return static::get_detector_backend()->isMobile() && !static::get_detector_backend()->isTablet();
+	}
+
 	public static function is_opera_mini() {
 		Deprecation::module_version_overrides();
 		Deprecation::notice('3.0', 'is_opera_mini is no longer supported, use ::is_opera() instead');
@@ -46,6 +50,7 @@ class MobileBrowserDetector {
 
 	public static function __callStatic($name, $arguments) {
 		// turn static function name convention into method names
+		// not sure if that is a best practice, we have to rethink this approach
 		$name = strtolower(str_replace('_', '', $name));
 		return call_user_func_array(array(static::get_detector_backend(), $name), $arguments);
 	}
