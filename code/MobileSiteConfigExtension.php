@@ -22,7 +22,8 @@ class MobileSiteConfigExtension extends DataExtension {
 
 	public static function get_theme_copy_path() {
 		if(!self::$theme_copy_path) {
-			return '../' . THEMES_DIR . '/blackcandymobile';
+                        $firstDefaultTheme = SiteConfig::config()->m_default_themes[0];
+			return '../' . THEMES_DIR . '/' . $firstDefaultTheme;
 		} else {
 			return self::$theme_copy_path;
 		}
@@ -41,13 +42,13 @@ class MobileSiteConfigExtension extends DataExtension {
 	);
 
 	private static $defaults = array(
-		'MobileTheme' => 'blackcandymobile',
 		'MobileSiteType' => 'Disabled'
 	);
 
 	public function populateDefaults() {
 		parent::populateDefaults();
-
+                
+                $this->owner->MobileTheme = SiteConfig::config()->m_default_themes[0];
 		$this->owner->MobileDomain = 'm.' . $_SERVER['HTTP_HOST'];
 		$this->owner->FullSiteDomain = $_SERVER['HTTP_HOST'];
 	}
@@ -101,14 +102,15 @@ class MobileSiteConfigExtension extends DataExtension {
 	}
 
 	/**
-	 * The default theme is "blackcandymobile". If this is still set
+	 * A default theme is "blackcandymobile". If this is still set
 	 * as a field on SiteConfig, then make sure that it's copied
 	 * into the themes directory from the mobile module.
 	 */
 	public function augmentDatabase() {
-		$defaultThemes = array('blackcandymobile', 'jquerymobile');
+		$defaultThemes = SiteConfig::config()->m_default_themes;
 		$currentTheme = $this->owner->getField('MobileTheme');
-		if(!$currentTheme || in_array($currentTheme, $defaultThemes)) {
+                $copyDefaultTheme = SiteConfig::config()->m_copy_default_theme;
+		if($copyDefaultTheme && (!$currentTheme || in_array($currentTheme, $defaultThemes))) {
 			$this->copyDefaultTheme($currentTheme);
 		}
 	}
@@ -117,8 +119,8 @@ class MobileSiteConfigExtension extends DataExtension {
 	 * @param String
 	 */
 	public static function copyDefaultTheme($theme = null) {
-		if(!$theme) $theme = 'blackcandymobile';
-		$src = BASE_PATH . '/' . MOBILE_DIR . '/themes/' . $theme;
+		if(!$theme) $theme = SiteConfig::config()->m_default_themes[0];
+		$src = BASE_PATH . '/' . SiteConfig::config()->m_mobile_dir . '/themes/' . $theme;
 		if(!file_exists($src)) {
 			throw new InvalidArgumentException(sprintf('Theme "%s" not found in path %s', $theme, $src));
 		}

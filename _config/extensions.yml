@@ -1,0 +1,12 @@
+---
+Name: mobileextensions
+---
+SiteTree:
+  extensions:
+    - MobileSiteTreeExtension
+SiteConfig:
+  extensions:
+    - MobileSiteConfigExtension
+ContentController:
+  extensions:
+    - MobileSiteControllerExtension
