@@ -162,43 +162,4 @@ class MobileSiteControllerExtension extends Extension {
 		return Controller::join_links($this->owner->Link(), '?fullSite=0');
 	}
 
-//	/**
-//	 * Is the current HTTP_USER_AGENT a known iPhone or iPod Touch
-//	 * mobile agent string?
-//	 *
-//	 * @return boolean
-//	 */
-//	public function IsiPhone() {
-//		return MobileBrowserDetector::is_iphone();
-//	}
-//
-//	/**
-//	 * Is the current HTTP_USER_AGENT a known Android mobile
-//	 * agent string?
-//	 *
-//	 * @return boolean
-//	 */
-//	public function IsAndroid() {
-//		return MobileBrowserDetector::is_android();
-//	}
-//
-//	/**
-//	 * Is the current HTTP_USER_AGENT a known Opera Mini
-//	 * agent string?
-//	 *
-//	 * @return boolean
-//	 */
-//	public function IsOperaMini() {
-//		return MobileBrowserDetector::is_opera();
-//	}
-//
-//	/**
-//	 * Is the current HTTP_USER_AGENT a known Blackberry
-//	 * mobile agent string?
-//	 *
-//	 * @return boolean
-//	 */
-//	public function IsBlackBerry() {
-//		return MobileBrowserDetector::is_blackberry();
-//	}
 }
