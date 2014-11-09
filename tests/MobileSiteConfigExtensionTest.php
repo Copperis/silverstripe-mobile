@@ -14,7 +14,7 @@ class MobileSiteConfigExtensionTest extends SapphireTest {
 
 	public function testRequireDefaultRecordsCopiesDefaultThemeWhenDefaultThemeSet() {
 		$config = SiteConfig::current_site_config();
-		$config->MobileTheme = reset(MobileBrowserDetector::config()->default_themes);
+		$config->MobileTheme = MobileSite::config()->default_themes[0];
 		$config->write();
 
 		$this->assertTrue(file_exists(TEMP_FOLDER . '/mobile-test-copy-theme/'));

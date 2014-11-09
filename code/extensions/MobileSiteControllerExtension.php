@@ -16,12 +16,14 @@ class MobileSiteControllerExtension extends Extension {
 	 * Stores state information as to which site is currently served.
 	 */
 	private static $is_mobile = false;
-
+        
+        private static $desktop_theme;
+        
 	/**
 	 * Override the default behavior to ensure that if this is a mobile device
 	 * or if they are on the configured mobile domain then they receive the mobile site.
 	 */
-	public function onAfterInit() {
+	public function onBeforeInit() {
 		self::$is_mobile = false;
 		$config = SiteConfig::current_site_config();
 		$request = $this->owner->getRequest();
@@ -30,6 +32,9 @@ class MobileSiteControllerExtension extends Extension {
 		if ($this->owner->redirectedTo()) {
 			return;
 		}
+                
+                // Save desktop theme name
+                self::$desktop_theme = Config::inst()->get('SSViewer', 'theme');
 
 		// Enforce the site (cookie expires in 1 day)
 		$fullSite = $request->getVar('fullSite');
@@ -64,7 +69,7 @@ class MobileSiteControllerExtension extends Extension {
 					return $this->owner->redirect($config->MobileDomainNormalized, 301);
 				}
 
-				Config::inst()->update('SSViewer', 'theme', $config->MobileTheme);
+				Config::inst()->update('SSViewer', 'theme', MobileSite::getMobileTheme());
 				self::$is_mobile = true;
 				return;
 			}
@@ -72,18 +77,18 @@ class MobileSiteControllerExtension extends Extension {
 
 		// If the user requested the mobile domain, set the right theme
 		if ($this->onMobileDomain()) {
-			Config::inst()->update('SSViewer', 'theme', $config->MobileTheme);
+			Config::inst()->update('SSViewer', 'theme', MobileSite::getMobileTheme());
 			self::$is_mobile = true;
 		}
 
 		// User just wants to see a theme, but no redirect occurs
-		if (MobileBrowserDetector::is_mobile() && $config->MobileSiteType == 'MobileThemeOnly') {
-			Config::inst()->update('SSViewer', 'theme', $config->MobileTheme);
+		if (MobileSite::is_mobile() && $config->MobileSiteType == 'MobileThemeOnly') {
+			Config::inst()->update('SSViewer', 'theme', MobileSite::getMobileTheme());
 			self::$is_mobile = true;
 		}
 
 		// If on a mobile device, but not on the mobile domain and has been setup for redirection
-		if (!$this->onMobileDomain() && MobileBrowserDetector::is_mobile() && $config->MobileSiteType == 'RedirectToDomain') {
+		if (!$this->onMobileDomain() && MobileSite::is_mobile() && $config->MobileSiteType == 'RedirectToDomain') {
 			return $this->owner->redirect($config->MobileDomainNormalized, 301);
 		}
 	}
@@ -96,6 +101,10 @@ class MobileSiteControllerExtension extends Extension {
 	 */
 	static public function is_mobile() {
 		return self::$is_mobile;
+	}
+        
+	static public function get_desktop_theme() {
+		return self::$desktop_theme;
 	}
 
 	/**
@@ -116,7 +125,7 @@ class MobileSiteControllerExtension extends Extension {
 			return ($fullSiteCookie == 0);
 		}
 
-		return MobileBrowserDetector::is_mobile();
+		return MobileSite::is_mobile();
 	}
 
 	/**
@@ -145,7 +154,27 @@ class MobileSiteControllerExtension extends Extension {
 	public function isMobile() {
 		return MobileSiteControllerExtension::$is_mobile;
 	}
-
+        
+	/**
+	 * @return string
+	 */        
+	public function DesktopTheme() {
+		return MobileSiteControllerExtension::$desktop_theme;
+	}
+        
+	/**
+	 * @return mixed
+	 */ 
+	public function DesktopThemeDir($subtheme = '') {
+		if(
+			$theme = MobileSiteControllerExtension::$desktop_theme
+		) {
+			return THEMES_DIR . "/$theme" . ($subtheme ? "_$subtheme" : null);
+		}
+                
+		return false;
+	}
+        
 	/**
 	 * Return a link to the full site.
 	 *

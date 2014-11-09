@@ -21,7 +21,7 @@ class MobileSiteConfigExtension extends DataExtension {
 
 	public static function get_theme_copy_path() {
 		if (!self::$theme_copy_path) {
-                        $firstDefaultTheme = SiteConfig::config()->m_default_themes[0];
+                        $firstDefaultTheme = MobileSite::config()->default_themes[0];
 			return '../' . THEMES_DIR . '/' . $firstDefaultTheme;
 		} else {
 			return self::$theme_copy_path;
@@ -46,7 +46,7 @@ class MobileSiteConfigExtension extends DataExtension {
 	public function populateDefaults() {
 		parent::populateDefaults();
                 
-                $this->owner->MobileTheme = SiteConfig::config()->m_default_themes[0];
+                $this->owner->MobileTheme = MobileSite::config()->default_themes[0];
 		$this->owner->MobileDomain = 'm.' . $_SERVER['HTTP_HOST'];
 		$this->owner->FullSiteDomain = $_SERVER['HTTP_HOST'];
 	}
@@ -104,9 +104,9 @@ class MobileSiteConfigExtension extends DataExtension {
 	 * into the themes directory from the mobile module.
 	 */
 	public function augmentDatabase() {
-		$defaultThemes = SiteConfig::config()->m_default_themes;
-		$currentTheme = $this->owner->getField('MobileTheme');
-                $copyDefaultTheme = SiteConfig::config()->m_copy_default_theme;
+		$defaultThemes = MobileSite::config()->default_themes;
+		$currentTheme = MobileSite::getMobileTheme();
+                $copyDefaultTheme = MobileSite::config()->copy_default_theme;
 		if($copyDefaultTheme && (!$currentTheme || in_array($currentTheme, $defaultThemes))) {
 			$this->copyDefaultTheme($currentTheme);
 		}
@@ -116,8 +116,8 @@ class MobileSiteConfigExtension extends DataExtension {
 	 * @param String
 	 */
 	public static function copyDefaultTheme($theme = null) {
-		if(!$theme) $theme = SiteConfig::config()->m_default_themes[0];
-		$src = BASE_PATH . '/' . SiteConfig::config()->m_mobile_dir . '/themes/' . $theme;
+		if(!$theme) $theme = MobileSite::config()->default_themes[0];
+		$src = BASE_PATH . '/' . MobileSite::config()->mobile_dir . '/themes/' . $theme;
 		if (!file_exists($src)) {
 			throw new InvalidArgumentException(sprintf('Theme "%s" not found in path %s', $theme, $src));
 		}
@@ -157,7 +157,7 @@ class MobileSiteConfigExtension extends DataExtension {
 				TextField::create('MobileDomain', _t('MobileSiteConfig.MOBILEDOMAIN', 'Mobile domain <small>(e.g. m.mysite.com, needs to be different from "Full site domain")</small>')),
 				TextField::create('FullSiteDomain', _t('MobileSiteConfig.FULLSITEDOMAIN', 'Full site domain <small>(e.g. mysite.com, usually doesn\'t need to be changed)</small>')),
 				DropdownField::create('MobileTheme', _t('MobileSiteConfig.MOBILETHEME', 'Mobile theme'), $this->owner->getAvailableThemes())
-					->setEmptyString(_t('SiteConfig.DEFAULTTHEME', '(Use default theme)'))
+					->setEmptyString(_t('MobileSiteConfig.DEFAULTMOBILETHEME', '(Use default mobile theme)'))
 			)
 		);
 	}

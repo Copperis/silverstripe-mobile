@@ -1,0 +1,9 @@
+---
+Name: mobileconfig
+---
+MobileSite:
+  mobile_dir: mobile
+  copy_default_theme: true
+  default_themes: 
+      - blackcandymobile
+      - jquerymobile
