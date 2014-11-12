@@ -105,7 +105,10 @@ class MobileSiteConfigExtension extends DataExtension {
 	 */
 	public function augmentDatabase() {
 		$defaultThemes = MobileSite::config()->default_themes;
-		$currentTheme = MobileSite::getMobileTheme();
+		$currentTheme = $this->owner->getField('MobileTheme');
+                if (is_null($currentTheme)) {
+                    $currentTheme = MobileSite::config()->default_themes[0];
+                }
                 $copyDefaultTheme = MobileSite::config()->copy_default_theme;
 		if($copyDefaultTheme && (!$currentTheme || in_array($currentTheme, $defaultThemes))) {
 			$this->copyDefaultTheme($currentTheme);
